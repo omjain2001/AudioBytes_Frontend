@@ -34,7 +34,7 @@ const AudioInput = () => {
         </label>
       </div>
       <Progress percentage={0} />
-      <button type="submit" class="btn btn-primary mt-4">
+      <button type="submit" class="btn btn-primary mt-4 w-100">
         Submit
       </button>
       </form>
