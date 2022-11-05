@@ -3,12 +3,13 @@ const multer = require("multer");
 const AdmZip = require("adm-zip");
 const fs = require("fs");
 const cors = require("cors");
-
+const { storage, firebaseStorage } = require("./storage/firebase.js");
+const { performance } = require("perf_hooks");
 
 var app = express();
 app.use(cors());
 // ---------- Setup multer ----------
-const storage = multer.diskStorage({
+const multer_storage = multer.diskStorage({
   filename: function (req, file, cb) {
     cb(null, Date.now() + "---" + file.originalname);
   },
@@ -18,18 +19,33 @@ const storage = multer.diskStorage({
   // },
 });
 
-const upload = multer({ storage });
+const upload = multer({ multer_storage });
 
-app.post("/upload_file", upload.single("file"), (req, res) => {
+app.post("/upload_file", upload.single("file"), async (req, res) => {
   const file = req.file;
+  console.log("FILE: ", file);
   const fileName = file.originalname.split(".")[0];
   const zip = new AdmZip();
 
-  zip.addLocalFile(req.file.path);
+  // zip.addLocalFile(req.file.path);
+  const starttime = performance.now();
+  zip.addFile(file.originalname, file.buffer);
 
-  var outputPath = "./uploads/" + `${fileName}.zip`;
+  // var outputPath = "./uploads/" + `${fileName}.zip`;
 
-  fs.writeFileSync(outputPath, zip.toBuffer());
+  const storageRef = firebaseStorage.ref(storage, "audio/" + `${fileName}.zip`);
+  await firebaseStorage
+    .uploadBytes(storageRef, zip.toBuffer())
+    .then((snapshot) => {
+      const endtime = performance.now();
+      console.log("Uploaded a blob or file!");
+      console.log("Time taken: ", endtime - starttime);
+    })
+    .catch((err) => {
+      console.log(err.message);
+    });
+
+  // fs.writeFileSync(outputPath, zip.toBuffer());
 
   res.send({ message: "Successfully uploaded files" });
 });

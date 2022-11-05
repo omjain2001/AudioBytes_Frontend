@@ -24,19 +24,22 @@ const AudioInput = () => {
 
         formData.append("file", values.audioFile);
         console.log("formData data", formData);
-        const res = await axios.post("http://localhost:5000/upload_file", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-          onUploadProgress: (progressEvent) => {
-            setUploadPercentange(
-              parseInt(
-                Math.round((progressEvent.loaded * 100) / progressEvent.total)
-              )
-            );
-          },
-        });
-        setTimeout(() => setUploadPercentange(0), 2000);
+        const res = await axios
+          .post("http://localhost:5000/upload_file", formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+            onUploadProgress: (progressEvent) => {
+              setUploadPercentange(
+                parseInt(
+                  Math.round((progressEvent.loaded * 100) / progressEvent.total)
+                )
+              );
+            },
+          })
+          .then((res) => setUploadPercentange(0));
+
+        // setTimeout(() => setUploadPercentange(0), 2000);
         fileInputRef.current.value = "";
         helpers.resetForm();
       } catch (error) {
@@ -68,6 +71,7 @@ const AudioInput = () => {
         <button type="submit" className="btn btn-primary mt-4 w-100 p-2">
           Submit
         </button>
+        {data && <audio controls src={data} />}
       </form>
     </div>
   );
