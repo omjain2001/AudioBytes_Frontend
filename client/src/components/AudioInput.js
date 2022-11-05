@@ -24,7 +24,7 @@ const AudioInput = () => {
 
         formData.append("file", values.audioFile);
         console.log("formData data", formData);
-        const res = await axios.post("/upload_file", formData, {
+        const res = await axios.post("http://localhost:5000/upload_file", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
@@ -34,9 +34,9 @@ const AudioInput = () => {
                 Math.round((progressEvent.loaded * 100) / progressEvent.total)
               )
             );
-            setTimeout(() => setUploadPercentange(0), 2000);
           },
         });
+        setTimeout(() => setUploadPercentange(0), 2000);
         fileInputRef.current.value = "";
         helpers.resetForm();
       } catch (error) {
@@ -47,40 +47,28 @@ const AudioInput = () => {
 
   return (
     <div className="container mt-5">
-      <div className="row">
-        <div className="col-sm-12 col-lg-4">
-          <form onSubmit={formik.handleSubmit}>
-            <div class="input-group">
-              <input
-                type="file"
-                className="form-control"
-                ref={fileInputRef}
-                onChange={(e) => {
-                  formik.setFieldValue("audioFile", e.target.files[0]);
-                  setData(URL.createObjectURL(e.target.files[0]));
-                }}
-              />
-            </div>
-            <div className="mb-3">
-              <small className="text-danger form-text">
-                {formik.touched.audioFile && formik.errors.audioFile}
-              </small>
-            </div>
-            <Progress percentage={uploadPercentange} />
-            <button type="submit" className="btn btn-primary mt-4 w-100">
-              Submit
-            </button>
-          </form>
+      <form onSubmit={formik.handleSubmit}>
+        <div class="input-group">
+          <input
+            type="file"
+            className="form-control"
+            ref={fileInputRef}
+            onChange={(e) => {
+              formik.setFieldValue("audioFile", e.target.files[0]);
+              setData(URL.createObjectURL(e.target.files[0]));
+            }}
+          />
         </div>
-        <div className="d-flex justify-content-center col-sm-12 col-lg-8">
-          {data && <audio controls src={data} />}
-          {/* <ReactPlayer
-        url={data}
-        controls
-        config={{ file: { forceAudio: true } }}
-      /> */}
+        <div className="mb-3">
+          <small className="text-danger form-text">
+            {formik.touched.audioFile && formik.errors.audioFile}
+          </small>
         </div>
-      </div>
+        <Progress percentage={uploadPercentange} />
+        <button type="submit" className="btn btn-primary mt-4 w-100 p-2">
+          Submit
+        </button>
+      </form>
     </div>
   );
 };

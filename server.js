@@ -4,12 +4,12 @@ const AdmZip = require("adm-zip");
 const fs = require("fs");
 const cors = require("cors");
 
-var app = express();
 
+var app = express();
+app.use(cors());
 // ---------- Setup multer ----------
 const storage = multer.diskStorage({
   filename: function (req, file, cb) {
-    console.log("filename");
     cb(null, Date.now() + "---" + file.originalname);
   },
   // destination: function (req, file, cb) {
@@ -21,12 +21,13 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 app.post("/upload_file", upload.single("file"), (req, res) => {
-  console.log(req.file);
+  const file = req.file;
+  const fileName = file.originalname.split(".")[0];
   const zip = new AdmZip();
 
   zip.addLocalFile(req.file.path);
 
-  var outputPath = "./uploads/" + Date.now() + "output.zip";
+  var outputPath = "./uploads/" + `${fileName}.zip`;
 
   fs.writeFileSync(outputPath, zip.toBuffer());
 
