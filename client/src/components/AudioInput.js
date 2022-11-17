@@ -71,7 +71,14 @@ const AudioInput = () => {
         <button type="submit" className="btn btn-primary mt-4 w-100 p-2">
           Submit
         </button>
-        {data && <audio controls src={data} />}
+        {data && (
+          <div className="mt-5">
+            <h4>
+              <strong>Listen to audio</strong>
+            </h4>
+            <audio controls src={data} />
+          </div>
+        )}
       </form>
     </div>
   );
