@@ -39,7 +39,7 @@ app.post("/upload_file", upload.single("file"), async (req, res) => {
     .then((snapshot) => {
       const endtime = performance.now();
       console.log("Uploaded a blob or file!");
-      console.log("Time taken: ", endtime - starttime);
+      console.log("Time taken: ", endtime - starttime + " milliseconds");
     })
     .catch((err) => {
       console.log(err.message);
