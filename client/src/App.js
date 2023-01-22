@@ -1,6 +1,9 @@
 import AudioInput from "./components/AudioInput";
 import WebFont from 'webfontloader';
 import { useEffect } from "react";
+import {Routes, Route} from 'react-router-dom'
+import Home from "./pages/Home";
+import KeywordPage from "./pages/KeywordPage";
 
 function App() {
   useEffect(() => {
@@ -10,14 +13,10 @@ function App() {
       }
     });
    }, []);
-  return (
-    <div className="container mt-4">
-      <h4 className="display-4 text-center mb-5">
-        <i className="fab fa-react" /> Audio File Upload
-      </h4>
-      <AudioInput />
-    </div>
-  );
+  return <Routes>
+    <Route path="/" element={<Home />} />
+    <Route path="/searchKeyword" element={<KeywordPage/>} />
+  </Routes>;
 }
 
 export default App;

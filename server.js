@@ -6,6 +6,9 @@ const cors = require("cors");
 const { storage, firebaseStorage } = require("./storage/firebase.js");
 const { performance } = require("perf_hooks");
 
+let FormData = require("form-data");
+const axios = require("axios");
+
 var app = express();
 app.use(cors());
 // ---------- Setup multer ----------
@@ -22,34 +25,62 @@ const multer_storage = multer.diskStorage({
 const upload = multer({ multer_storage });
 
 app.post("/upload_file", upload.single("file"), async (req, res) => {
+  // 1] Upload audio to firebase storage
   const file = req.file;
   console.log("FILE: ", file);
+
   const fileName = file.originalname.split(".")[0];
-  const zip = new AdmZip();
+  const extension = file.originalname.split(".")[1];
+
+  //const zip = new AdmZip();
 
   // zip.addLocalFile(req.file.path);
   const starttime = performance.now();
-  zip.addFile(file.originalname, file.buffer);
+  
+  //zip.addFile(file.originalname, file.buffer);
 
-  // var outputPath = "./uploads/" + `${fileName}.zip`;
+  var outputPath = "./uploads/" + `${fileName}.${extension}`;
+  fs.writeFileSync(outputPath, file.buffer);
 
-  const storageRef = firebaseStorage.ref(storage, "audio/" + `${fileName}.zip`);
-  await firebaseStorage
-    .uploadBytes(storageRef, zip.toBuffer())
-    .then((snapshot) => {
-      const endtime = performance.now();
-      console.log("Uploaded a blob or file!");
-      console.log("Time taken: ", endtime - starttime + " milliseconds");
-    })
-    .catch((err) => {
-      console.log(err.message);
+  // const storageRef = firebaseStorage.ref(
+  //   storage,
+  //   "audio/" + `${fileName}.${extension}`
+  // );
+  // await firebaseStorage
+  //   .uploadBytes(storageRef, file.buffer)
+  //   .then((snapshot) => {
+  //     const endtime = performance.now();
+  //     console.log("Uploaded a blob or file!");
+  //     console.log("Time taken: ", endtime - starttime + " milliseconds");
+  //   })
+  //   .catch((err) => {
+  //     console.log(err.message);
+  //   });
+
+  // 2] Generate transcript
+  try {
+    const formData = new FormData();
+    const existingFile = fs.readFileSync(outputPath)
+       
+    formData.append("file[]", existingFile);
+
+    let res = await axios.post("http://127.0.0.1:5000/upload", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
     });
 
-  // fs.writeFileSync(outputPath, zip.toBuffer());
+    res.send({ message: "Successfully uploaded files", text: res.data.text });
 
-  res.send({ message: "Successfully uploaded files" });
+  } catch (error) {
+
+    console.log("Flask API error: ", error);
+
+    res.send({ error: "Server error" });
+  }
+  // fs.writeFileSync(outputPath, zip.toBuffer());
 });
 
-app.listen(5000, function () {
+app.listen(5000, () => {
   console.log("Started application on port", 5000);
 });
