@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Progress from "./Progress";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -7,12 +7,17 @@ import axios from "axios";
 import ReactPlayer from "react-player";
 import API from "../API";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const AudioInput = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef();
   const [uploadPercentange, setUploadPercentange] = useState(0);
   const [data, setData] = useState(null);
+
+  useEffect(() => {
+    console.log("Entered88 in useEffect");
+  }, []);
 
   const formik = useFormik({
     initialValues: {
@@ -33,10 +38,6 @@ const AudioInput = () => {
 
         const res = await axios
           .post("http://127.0.0.1:5000/upload", formData, {
-            headers: {
-              "Content-Type": "multipart/form-data",
-              "Access-Control-Allow-Origin": "*",
-            },
             onUploadProgress: (progressEvent) => {
               setUploadPercentange(
                 parseInt(
@@ -45,17 +46,25 @@ const AudioInput = () => {
               );
             },
           })
-          .then((res) =>{
-            setUploadPercentange(0)
-            console.log(res.data)
-            navigate('/searchKeyword', { state: { data : res.data } });
-
+          .then((res) => {
+            console.log(res.data);
+            Swal.fire(
+              'Uploaded',
+              'Audio is uploaded successfully!',
+              'success'
+            )
+            navigate("/searchKeyword", { state: { data: res.data } });
           });
 
         // setTimeout(() => setUploadPercentange(0), 2000);
         fileInputRef.current.value = "";
         helpers.resetForm();
       } catch (error) {
+        Swal.fire(
+          'Error !!',
+          'Server is busy please try again later!',
+          'info'
+        )
         console.log("Error from client side", error);
       }
     },
