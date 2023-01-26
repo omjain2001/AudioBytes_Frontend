@@ -3,9 +3,13 @@ import Progress from "./Progress";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
+
 import ReactPlayer from "react-player";
+import API from "../API";
+import { useNavigate } from "react-router-dom";
 
 const AudioInput = () => {
+  const navigate = useNavigate();
   const fileInputRef = useRef();
   const [uploadPercentange, setUploadPercentange] = useState(0);
   const [data, setData] = useState(null);
@@ -24,10 +28,14 @@ const AudioInput = () => {
 
         formData.append("file", values.audioFile);
         console.log("formData data", formData);
+
+        //const res = await API.uploadAudio(formData);
+
         const res = await axios
-          .post("http://localhost:5000/upload_file", formData, {
+          .post("http://127.0.0.1:5000/upload", formData, {
             headers: {
               "Content-Type": "multipart/form-data",
+              "Access-Control-Allow-Origin": "*",
             },
             onUploadProgress: (progressEvent) => {
               setUploadPercentange(
@@ -37,7 +45,12 @@ const AudioInput = () => {
               );
             },
           })
-          .then((res) => setUploadPercentange(0));
+          .then((res) =>{
+            setUploadPercentange(0)
+            console.log(res.data)
+            navigate('/searchKeyword', { state: { data : res.data } });
+
+          });
 
         // setTimeout(() => setUploadPercentange(0), 2000);
         fileInputRef.current.value = "";
@@ -58,7 +71,7 @@ const AudioInput = () => {
             ref={fileInputRef}
             onChange={(e) => {
               formik.setFieldValue("audioFile", e.target.files[0]);
-              setData(URL.createObjectURL(e.target.files[0]));
+              //setData(URL.createObjectURL(e.target.files[0]));
             }}
           />
         </div>
@@ -71,14 +84,6 @@ const AudioInput = () => {
         <button type="submit" className="btn btn-primary mt-4 w-100 p-2">
           Submit
         </button>
-        {data && (
-          <div className="mt-5">
-            <h4>
-              <strong>Listen to audio</strong>
-            </h4>
-            <audio controls src={data} />
-          </div>
-        )}
       </form>
     </div>
   );
