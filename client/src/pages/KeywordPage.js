@@ -49,7 +49,7 @@ const KeywordPage = () => {
         search_word: ipKeyword,
       })
       .then((res) => {
-        console.log(res.data);
+        // console.log(res.data);
         setLoading(false);
         setTimestamps(res.data);
         if (res.data.length === 0) {
@@ -110,9 +110,11 @@ const KeywordPage = () => {
                     placeholder="Enter keyword"
                     onChange={(e) => setKeyword(e.target.value)}
                   />
-                  <div style={{ position: "absolute", left: "92%", bottom: "70%" }}>
+                  <div
+                    style={{ position: "absolute", left: "92%", bottom: "70%" }}
+                  >
                     <i
-                      onClick={() => keyInputRef.current.value = ""}
+                      onClick={() => (keyInputRef.current.value = "")}
                       class="fas fa-xmark"
                     ></i>
                   </div>

@@ -39,6 +39,7 @@ const AudioInput = () => {
         //const res = await API.uploadAudio(formData);
 
         setLoading(true);
+        var startTime = new Date().getTime();
         const res = await axios
           .post("http://127.0.0.1:5000/upload", formData, {
             onUploadProgress: (progressEvent) => {
@@ -52,6 +53,10 @@ const AudioInput = () => {
           .then((res) => {
             console.log("Transcripts : ", res.data.text);
             setLoading(false);
+
+            var endTime = new Date().getTime();
+            var time = endTime - startTime;
+            console.log("Execution time in mins : " + time / (60 * 1000));
 
             Swal.fire("Uploaded", "Audio is uploaded successfully!", "success");
             navigate("/searchKeyword", {
