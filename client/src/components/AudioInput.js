@@ -50,7 +50,7 @@ const AudioInput = () => {
             },
           })
           .then((res) => {
-            console.log(res.data);
+            console.log("Transcripts : ", res.data.text);
             setLoading(false);
             Swal.fire("Uploaded", "Audio is uploaded successfully!", "success");
             navigate("/searchKeyword", {

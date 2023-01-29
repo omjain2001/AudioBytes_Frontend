@@ -12,7 +12,7 @@ const KeywordPage = () => {
 
   useEffect(() => {
     // console.log("Entered1 in useEffect");
-    if (state?.data == null || state?.data == undefined) {
+    if (state?.data == null || state?.data === undefined) {
       // console.log("Entered in useEffect");
       navigate("/");
     }
@@ -39,11 +39,7 @@ const KeywordPage = () => {
   const [keyword, setKeyword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const [timestamps, setTimestamps] = useState([
-    [0, 9],
-    [10, 20],
-    [30.5, 40],
-  ]);
+  const [timestamps, setTimestamps] = useState([]);
 
   const onSumbitKeyword = async (ipKeyword) => {
     setLoading(true);
@@ -56,16 +52,30 @@ const KeywordPage = () => {
         console.log(res.data);
         setLoading(false);
         setTimestamps(res.data);
-        if (res.data.length == 0) {
+        if (res.data.length === 0) {
           Swal.fire(
             "Empty !!",
             "There is no such keyword in the audio file",
             "info"
           );
+          keyInputRef.current.value = "";
         }
-        keyInputRef.current.value = "";
+        // keyInputRef.current.value = "";
       });
   };
+
+  const handleAudio = (start, end) => {
+    const audio1 = new Audio(audio);
+    audio1.autoplay = false;
+    audio1.currentTime = start;
+    audio1.play();
+    setInterval(function () {
+      if (audio1.currentTime > end) {
+        audio1.pause();
+      }
+    }, 100);
+  };
+
   return (
     <div className="container py-5 relative vh-100">
       <h1
@@ -74,9 +84,6 @@ const KeywordPage = () => {
       >
         AUDIOBYTES
       </h1>
-      {/* <h4 className="display-4 text-center mb-5">
-        Search Keyword <i class="fa fa-search" aria-hidden="true" />
-      </h4> */}
       <div className="row mt-5 py-3">
         <div className="col-md-4 h-100">
           <div
@@ -96,7 +103,6 @@ const KeywordPage = () => {
               </h4>
               <div class="form-group my-4">
                 <div>
-                  {/* <label for="exampleInputEmail1">Enter Keyword </label> */}
                   <input
                     ref={keyInputRef}
                     type="text"
@@ -105,9 +111,7 @@ const KeywordPage = () => {
                     onChange={(e) => setKeyword(e.target.value)}
                   />
                 </div>
-                {/* <small id="emailHelp" class="form-text text-muted">
-            We'll never share your email with anyone else.
-          </small> */}
+
                 <button
                   onClick={(e) => {
                     onSumbitKeyword(keyword);
@@ -145,21 +149,27 @@ const KeywordPage = () => {
                 </div>
               )}
               <div className="d-flex flex-wrap justify-content-space-evenly">
-                {timestamps.map((timestamp) => {
-                  return (
-                    <button
-                      type="button"
-                      class="btn submit-btn my-2"
-                      style={{
-                        marginRight: 10,
-                        color: COLORS.PRIMARY,
-                        border: `1px solid ${COLORS.SECONDARY}`,
-                      }}
-                    >
-                      {timestamp[0]} sec - {timestamp[1]} sec
-                    </button>
-                  );
-                })}
+                {timestamps.length === 0
+                  ? "Search for a keyword to fetch the timestamps !!"
+                  : timestamps.map((timestamp, index) => {
+                      return (
+                        <button
+                          key={index}
+                          type="button"
+                          className="btn submit-btn my-2"
+                          style={{
+                            marginRight: 10,
+                            color: COLORS.PRIMARY,
+                            border: `1px solid ${COLORS.SECONDARY}`,
+                          }}
+                          onClick={() =>
+                            handleAudio(timestamp[0], timestamp[1])
+                          }
+                        >
+                          {timestamp[0]} sec - {timestamp[1]} sec
+                        </button>
+                      );
+                    })}
               </div>
             </div>
           </div>
