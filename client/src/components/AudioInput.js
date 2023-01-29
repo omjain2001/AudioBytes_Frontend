@@ -16,7 +16,7 @@ const AudioInput = () => {
   const [uploadPercentange, setUploadPercentange] = useState(0);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
-
+  const [isAudioUploaded, setIsAudioUploaded] = useState(false);
   // useEffect(() => {
   //   console.log("Entered88 in useEffect");
   // }, []);
@@ -52,6 +52,7 @@ const AudioInput = () => {
           .then((res) => {
             console.log(res.data);
             setLoading(false);
+
             Swal.fire("Uploaded", "Audio is uploaded successfully!", "success");
             navigate("/searchKeyword", {
               state: {
@@ -59,6 +60,7 @@ const AudioInput = () => {
                 audio: values.audioFile,
               },
             });
+            setIsAudioUploaded(false);
           });
 
         // setTimeout(() => setUploadPercentange(0), 2000);
@@ -77,6 +79,7 @@ const AudioInput = () => {
       <form onSubmit={formik.handleSubmit}>
         <div class="input-group">
           <input
+            disabled={loading}
             type="file"
             className="form-control"
             ref={fileInputRef}
@@ -91,19 +94,40 @@ const AudioInput = () => {
             {formik.touched.audioFile && formik.errors.audioFile}
           </small>
         </div>
+        {/* {isAudioUploaded && <div className="d-flex justify-content-center mt-1">
+              <h6>Audio uploaded</h6>
+            </div>} */}
         <Progress percentage={uploadPercentange} />
-        <button
-          type="submit"
-          disabled={loading}
-          className="btn mt-4 w-100 p-2 submit-btn"
-          style={{
-            backgroundColor: COLORS.SECONDARY,
-            color: "#FFF",
-            border: "none",
-          }}
-        >
-          Submit
-        </button>
+        {loading ? (
+          <>
+            <div className="d-flex justify-content-center mt-4">
+              <h6>Transcript generating...</h6>
+            </div>
+            <div className="d-flex justify-content-center mt-2">
+              <div
+                class="spinner-border text-primary d-flex justify-content-center"
+                role="status"
+              >
+                <span class="sr-only text-center">
+                  Transcript generating...
+                </span>
+              </div>
+            </div>
+          </>
+        ) : (
+          <button
+            type="submit"
+            disabled={loading}
+            className="btn mt-4 w-100 p-2 submit-btn"
+            style={{
+              backgroundColor: COLORS.SECONDARY,
+              color: "#FFF",
+              border: "none",
+            }}
+          >
+            Submit
+          </button>
+        )}
       </form>
     </div>
   );

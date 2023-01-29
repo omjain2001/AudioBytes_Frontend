@@ -31,7 +31,7 @@ const KeywordPage = () => {
         }
       };
     }
-  }, [state.audio]);
+  }, [state?.audio]);
 
   const keyInputRef = useRef();
   // const { data=null } = state;
@@ -40,9 +40,6 @@ const KeywordPage = () => {
   const [loading, setLoading] = useState(false);
 
   const [timestamps, setTimestamps] = useState([
-    [0, 9],
-    [10, 20],
-    [30.5, 40],
   ]);
 
   const onSumbitKeyword = async (ipKeyword) => {
@@ -135,8 +132,8 @@ const KeywordPage = () => {
         </div>
         <div className="col-md-7">
           <div className="row">
-            <div className="col-12 text-center p-4 mt-4">
-              <audio src={audio} controls style={{ width: "50%" }} />
+            <div className="col-12 p-0 my-4">
+              <audio src={audio} controls style={{ width: "100%" }} />
             </div>
             <div className="col-12">
               {timestamps.length > 0 && (
