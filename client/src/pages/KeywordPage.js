@@ -38,15 +38,17 @@ const KeywordPage = () => {
 
   const [keyword, setKeyword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
 
   const [timestamps, setTimestamps] = useState([]);
 
-  const onSumbitKeyword = async (ipKeyword) => {
+  const onSumbitKeyword = async () => {
+    if (keyword.length == 0) return setError(true);
     setLoading(true);
     const res = await axios
       .post("http://127.0.0.1:5000/timestamps", {
         transcript_data: state?.data,
-        search_word: ipKeyword,
+        search_word: keyword,
       })
       .then((res) => {
         // console.log(res.data);
@@ -101,30 +103,35 @@ const KeywordPage = () => {
                 <i className="fas fa-magnifying-glass" />
                 &nbsp; Search keyword
               </h4>
+              {/* <form className="needs-validation"> */}
               <div class="form-group my-4" style={{ position: "relative" }}>
-                <div>
+                <div className="input-group">
                   <input
                     ref={keyInputRef}
                     type="text"
-                    class="form-control"
+                    class="form-control shadow-none"
                     placeholder="Enter keyword"
-                    onChange={(e) => setKeyword(e.target.value)}
+                    value={keyword}
+                    onChange={(e) => {
+                      setKeyword(e.target.value);
+                      if (error) setError(false);
+                    }}
                   />
-                  <div
-                    style={{ position: "absolute", left: "92%", bottom: "70%" }}
+                  <button
+                    class="btn cross-btn"
+                    type="button"
+                    onClick={() => setKeyword("")}
                   >
-                    <i
-                      onClick={() => (keyInputRef.current.value = "")}
-                      class="fas fa-xmark"
-                    ></i>
-                  </div>
+                    <i class="fas fa-xmark"></i>
+                  </button>
                 </div>
-
+                {error && (
+                  <div className="mt-1" style={{ textAlign: "left" }}>
+                    <small className="text-danger">Keyword is required</small>
+                  </div>
+                )}
                 <button
-                  onClick={(e) => {
-                    onSumbitKeyword(keyword);
-                    console.log("Pressing");
-                  }}
+                  onClick={onSumbitKeyword}
                   type="submit"
                   style={{
                     backgroundColor: COLORS.SECONDARY,
@@ -136,6 +143,7 @@ const KeywordPage = () => {
                   Search
                 </button>
               </div>
+              {/* </form> */}
             </div>
           </div>
         </div>
@@ -170,7 +178,7 @@ const KeywordPage = () => {
                             color: COLORS.PRIMARY,
                             border: `1px solid ${COLORS.SECONDARY}`,
                           }}
-                          onClick={() =>
+                          onClick={(e) =>
                             handleAudio(timestamp[0], timestamp[1])
                           }
                         >

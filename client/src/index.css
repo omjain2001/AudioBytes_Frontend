@@ -17,3 +17,27 @@ body {
   transition: all ease-in-out 0.3s !important;
   color: #fff !important;
 }
+
+.cross-btn {
+  border-color: #ced4da !important;
+  transition: all ease-in-out 0.2s !important;
+}
+
+.cross-btn:focus {
+  border-color: #ced4da !important;
+}
+
+.cross-btn:hover {
+  background-color: #9da2a6;
+  transition: all ease-in-out 0.2s !important;
+}
+
+.cross-btn:hover i {
+  color: #fff;
+}
+
+@media only screen and (max-width: 768px) {
+  .home {
+    width: 80%;
+  }
+}

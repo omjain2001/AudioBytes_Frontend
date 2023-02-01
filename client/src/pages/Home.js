@@ -12,7 +12,7 @@ const Home = () => {
         AUDIOBYTES
       </h1>
       <div
-        className="card w-35 home py-4 px-4"
+        className="card home py-4 px-4"
         style={{ boxShadow: "rgba(17, 12, 46, 0.15) 0px 48px 100px 0px" }}
       >
         <div className="card-body">
@@ -28,12 +28,11 @@ const Home = () => {
           </h3>
           <h6
             className="card-subtitle text-center"
-            style={{ fontWeight: 400, color: "#b3bdcc" }}
+            style={{ fontWeight: 400, color: COLORS.TERTIARY }}
           >
             Upload only .mp3 and .wav files
           </h6>
           <div className="card-text">
-            {" "}
             <AudioInput />
           </div>
         </div>

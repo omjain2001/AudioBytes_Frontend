@@ -58,7 +58,13 @@ const AudioInput = () => {
             var time = endTime - startTime;
             console.log("Execution time in mins : " + time / (60 * 1000));
 
-            Swal.fire("Uploaded", "Audio is uploaded successfully!", "success");
+            Swal.fire({
+              title: "Success",
+              text: "Audio processing completed",
+              icon: "success",
+              showCloseButton: false,
+              confirmButtonColor: COLORS.SECONDARY,
+            });
             navigate("/searchKeyword", {
               state: {
                 data: res.data,
@@ -73,7 +79,13 @@ const AudioInput = () => {
         helpers.resetForm();
       } catch (error) {
         setLoading(false);
-        Swal.fire("Error !!", "Server is busy please try again later!", "info");
+        Swal.fire({
+          title: "Error",
+          text: "Server is busy, please try again later",
+          icon: "error",
+          confirmButtonColor: COLORS.SECONDARY,
+        });
+        setUploadPercentange(0);
         console.log("Error from client side", error);
       }
     },
@@ -106,16 +118,23 @@ const AudioInput = () => {
         {loading ? (
           <>
             <div className="d-flex justify-content-center mt-4">
-              <h6>Transcript generating...</h6>
+              <h6 style={{ color: COLORS.TERTIARY }}>
+                {uploadPercentange < 100 ? (
+                  <span>Uploading audio</span>
+                ) : (
+                  <span>Generating transcript</span>
+                )}
+              </h6>
             </div>
             <div className="d-flex justify-content-center mt-2">
               <div
-                class="spinner-border text-primary d-flex justify-content-center"
+                class="spinner-border d-flex justify-content-center"
+                style={{ color: COLORS.SECONDARY }}
                 role="status"
               >
-                <span class="sr-only text-center">
+                {/* <span class="sr-only text-center">
                   Transcript generating...
-                </span>
+                </span> */}
               </div>
             </div>
           </>
