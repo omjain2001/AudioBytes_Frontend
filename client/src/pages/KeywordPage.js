@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import ReactPlayer from "react-player";
 import { COLORS } from "../constant";
+import Recorder from "../utils/Recorder";
 
 const KeywordPage = () => {
   const { state } = useLocation();
@@ -19,12 +20,13 @@ const KeywordPage = () => {
   }, []);
 
   const [audio, setAudio] = useState(null);
+  const [recording, setRecording] = useState(false);
+  const [recorder, setRecorder] = useState(null);
 
   useEffect(() => {
     if (state?.audio !== null && state?.audio !== undefined) {
       const file = new FileReader();
       file.readAsDataURL(state.audio);
-      console.log("Executing");
       file.onload = () => {
         if (file.readyState === 2) {
           setAudio(file.result);
@@ -41,6 +43,7 @@ const KeywordPage = () => {
   const [error, setError] = useState(false);
 
   const [timestamps, setTimestamps] = useState([]);
+  const [recordedAudio, setRecordedAudio] = useState(null);
 
   const onSumbitKeyword = async () => {
     if (keyword.length == 0) return setError(true);
@@ -77,6 +80,74 @@ const KeywordPage = () => {
       }
     }, 100);
   };
+
+  let chunks = [];
+
+  const handleRecordClick = () => {
+    if (!recording) {
+      setRecording(true);
+      setRecordedAudio(null);
+      chunks = [];
+
+      navigator.mediaDevices
+        .getUserMedia({ audio: true })
+        .then((stream) => {
+          let recorderObj = new MediaRecorder(stream);
+          recorderObj.ondataavailable = (e) => chunks.push(e.data);
+          recorderObj.onstop = async (e) => {
+            const formData = new FormData();
+            formData.append("file", new File(chunks, "recordedAudio.wav"));
+            await axios
+              .post("http://127.0.0.1:5000/upload", formData)
+              .then((res) => {
+                console.log(res.data.text);
+              })
+              .catch((err) => console.log(err));
+            // const audioFile = new FileReader();
+            // audioFile.readAsDataURL(chunks[0]);
+            // audioFile.onload = async () => {
+            //   if (audioFile.readyState === 2) {
+            //     // setRecordedAudio(audioFile.result);
+            //     const formData = new FormData();
+            //     formData.append("file", audioFile.result);
+            //     await axios
+            //       .post("http://127.0.0.1:5000/upload", formData)
+            //       .then((res) => {
+            //         console.log(res.data.text);
+            //       })
+            //       .catch((err) => console.log(err));
+            //   }
+            // };
+          };
+          recorderObj.start();
+          setRecorder(recorderObj);
+        })
+        .catch((err) => console.log(err));
+    } else {
+      setRecording(false);
+      recorder.stop();
+    }
+  };
+
+  // const handleRecordClick = () => {
+  //   if (!recording) {
+  //     setRecording(true);
+  //     const RecorderObj = new Recorder();
+  //     RecorderObj.start();
+  //     setRecorder(RecorderObj);
+  //   } else {
+  //     setRecording(false);
+  //     recorder.stop();
+  //     // const audioFile = recorder.getBlob();
+  //     // const file = new FileReader();
+  //     // file.readAsDataURL(audioFile);
+  //     // file.onload = () => {
+  //     //   if (file.readyState === 2) {
+  //     //     setRecordedAudio(file.result);
+  //     //   }
+  //     // };
+  //   }
+  // };
 
   return (
     <div className="container py-5 relative vh-100">
@@ -130,6 +201,17 @@ const KeywordPage = () => {
                     <small className="text-danger">Keyword is required</small>
                   </div>
                 )}
+                <div className="my-3 text-center">OR</div>
+                <div className="d-flex justify-content-center">
+                  <div className="record-block" onClick={handleRecordClick}>
+                    {recording ? (
+                      <i className="fas fa-stop" />
+                    ) : (
+                      <i className="fas fa-microphone" />
+                    )}
+                  </div>
+                </div>
+                {recordedAudio && <audio src={recordedAudio} controls />}
                 <button
                   onClick={onSumbitKeyword}
                   type="submit"

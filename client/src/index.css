@@ -36,6 +36,33 @@ body {
   color: #fff;
 }
 
+.record-block {
+  position: relative;
+  height: 3rem;
+  width: 3rem;
+  border-radius: 50%;
+  border: 1px solid #0c4a6e;
+}
+
+.record-block i {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #0c4a6e;
+}
+
+.record-block:hover {
+  background-color: #0c4a6e;
+  transition: all ease-in-out 0.3s;
+  cursor: pointer;
+}
+
+.record-block:hover i {
+  color: #fff;
+  transition: all ease-in-out 0.3s;
+}
+
 @media only screen and (max-width: 768px) {
   .home {
     width: 80%;
