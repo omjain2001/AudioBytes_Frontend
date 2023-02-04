@@ -122,7 +122,7 @@ const AudioInput = () => {
                 {uploadPercentange < 100 ? (
                   <span>Uploading audio</span>
                 ) : (
-                  <span>Generating transcript</span>
+                  <span>Processing your audio</span>
                 )}
               </h6>
             </div>

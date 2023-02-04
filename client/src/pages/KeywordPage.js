@@ -11,6 +11,19 @@ const KeywordPage = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
 
+  const [audio, setAudio] = useState(null);
+  const [recording, setRecording] = useState(false);
+  const [recorder, setRecorder] = useState(null);
+  const [keyword, setKeyword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
+  const [timestamps, setTimestamps] = useState([]);
+  const [recordedAudio, setRecordedAudio] = useState(null);
+
+  // References
+  const keyInputRef = useRef();
+  const recordButtonRef = useRef();
+
   useEffect(() => {
     // console.log("Entered1 in useEffect");
     if (state?.data == null || state?.data === undefined) {
@@ -18,10 +31,6 @@ const KeywordPage = () => {
       // navigate("/");
     }
   }, []);
-
-  const [audio, setAudio] = useState(null);
-  const [recording, setRecording] = useState(false);
-  const [recorder, setRecorder] = useState(null);
 
   useEffect(() => {
     if (state?.audio !== null && state?.audio !== undefined) {
@@ -35,15 +44,7 @@ const KeywordPage = () => {
     }
   }, [state?.audio]);
 
-  const keyInputRef = useRef();
   // const { data=null } = state;
-
-  const [keyword, setKeyword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
-
-  const [timestamps, setTimestamps] = useState([]);
-  const [recordedAudio, setRecordedAudio] = useState(null);
 
   const onSumbitKeyword = async () => {
     if (keyword.length == 0) return setError(true);
@@ -82,7 +83,6 @@ const KeywordPage = () => {
   };
 
   let chunks = [];
-
   const handleRecordClick = () => {
     if (!recording) {
       setRecording(true);
@@ -100,54 +100,22 @@ const KeywordPage = () => {
             await axios
               .post("http://127.0.0.1:5000/upload", formData)
               .then((res) => {
-                console.log(res.data.text);
+                setKeyword(res.data.text);
               })
               .catch((err) => console.log(err));
-            // const audioFile = new FileReader();
-            // audioFile.readAsDataURL(chunks[0]);
-            // audioFile.onload = async () => {
-            //   if (audioFile.readyState === 2) {
-            //     // setRecordedAudio(audioFile.result);
-            //     const formData = new FormData();
-            //     formData.append("file", audioFile.result);
-            //     await axios
-            //       .post("http://127.0.0.1:5000/upload", formData)
-            //       .then((res) => {
-            //         console.log(res.data.text);
-            //       })
-            //       .catch((err) => console.log(err));
-            //   }
-            // };
           };
           recorderObj.start();
           setRecorder(recorderObj);
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          console.log(err);
+          setRecording(false);
+        });
     } else {
       setRecording(false);
       recorder.stop();
     }
   };
-
-  // const handleRecordClick = () => {
-  //   if (!recording) {
-  //     setRecording(true);
-  //     const RecorderObj = new Recorder();
-  //     RecorderObj.start();
-  //     setRecorder(RecorderObj);
-  //   } else {
-  //     setRecording(false);
-  //     recorder.stop();
-  //     // const audioFile = recorder.getBlob();
-  //     // const file = new FileReader();
-  //     // file.readAsDataURL(audioFile);
-  //     // file.onload = () => {
-  //     //   if (file.readyState === 2) {
-  //     //     setRecordedAudio(file.result);
-  //     //   }
-  //     // };
-  //   }
-  // };
 
   return (
     <div className="container py-5 relative vh-100">
@@ -183,6 +151,7 @@ const KeywordPage = () => {
                     class="form-control shadow-none"
                     placeholder="Enter keyword"
                     value={keyword}
+                    disabled={recording || loading}
                     onChange={(e) => {
                       setKeyword(e.target.value);
                       if (error) setError(false);
@@ -190,6 +159,7 @@ const KeywordPage = () => {
                   />
                   <button
                     class="btn cross-btn"
+                    disabled={recording || loading}
                     type="button"
                     onClick={() => setKeyword("")}
                   >
@@ -201,20 +171,31 @@ const KeywordPage = () => {
                     <small className="text-danger">Keyword is required</small>
                   </div>
                 )}
-                <div className="my-3 text-center">OR</div>
+                <div
+                  className="my-3 text-center"
+                  style={{ color: COLORS.SECONDARY }}
+                >
+                  OR
+                </div>
                 <div className="d-flex justify-content-center">
-                  <div className="record-block" onClick={handleRecordClick}>
+                  <button
+                    className={`record-block ${recording ? "recording" : ""}`}
+                    onClick={handleRecordClick}
+                    ref={recordButtonRef}
+                    disabled={loading}
+                  >
                     {recording ? (
                       <i className="fas fa-stop" />
                     ) : (
                       <i className="fas fa-microphone" />
                     )}
-                  </div>
+                  </button>
                 </div>
                 {recordedAudio && <audio src={recordedAudio} controls />}
                 <button
                   onClick={onSumbitKeyword}
                   type="submit"
+                  disabled={recording || loading}
                   style={{
                     backgroundColor: COLORS.SECONDARY,
                     color: "#FFF",

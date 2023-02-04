@@ -28,7 +28,8 @@ body {
 }
 
 .cross-btn:hover {
-  background-color: #9da2a6;
+  /* background-color: #9da2a6; */
+  background-color: #0284c7;
   transition: all ease-in-out 0.2s !important;
 }
 
@@ -42,6 +43,7 @@ body {
   width: 3rem;
   border-radius: 50%;
   border: 1px solid #0c4a6e;
+  background-color: #fff;
 }
 
 .record-block i {
@@ -61,6 +63,20 @@ body {
 .record-block:hover i {
   color: #fff;
   transition: all ease-in-out 0.3s;
+}
+
+.recording {
+  background-color: #cd0000 !important;
+  border-color: #cd0000;
+}
+
+.recording:hover {
+  background-color: #a20000 !important;
+  border-color: #a20000;
+}
+
+.recording i {
+  color: #fff !important;
 }
 
 @media only screen and (max-width: 768px) {
