@@ -1,25 +1,19 @@
-import React, { useEffect, useRef, useState } from "react";
-import Progress from "./Progress";
-import { useFormik } from "formik";
-import * as Yup from "yup";
 import axios from "axios";
+import { useFormik } from "formik";
+import React, { useRef, useState } from "react";
+import * as Yup from "yup";
+import Progress from "./Progress";
 
-import ReactPlayer from "react-player";
-import API from "../API";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { COLORS } from "../constant";
+import Spinner from "./Spinner";
 
 const AudioInput = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef();
   const [uploadPercentange, setUploadPercentange] = useState(0);
-  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [isAudioUploaded, setIsAudioUploaded] = useState(false);
-  // useEffect(() => {
-  //   console.log("Entered88 in useEffect");
-  // }, []);
 
   const formik = useFormik({
     initialValues: {
@@ -35,8 +29,6 @@ const AudioInput = () => {
 
         formData.append("file", values.audioFile);
         console.log("formData data", formData);
-
-        //const res = await API.uploadAudio(formData);
 
         setLoading(true);
         var startTime = new Date().getTime();
@@ -71,10 +63,8 @@ const AudioInput = () => {
                 audio: values.audioFile,
               },
             });
-            setIsAudioUploaded(false);
           });
 
-        // setTimeout(() => setUploadPercentange(0), 2000);
         fileInputRef.current.value = "";
         helpers.resetForm();
       } catch (error) {
@@ -102,7 +92,6 @@ const AudioInput = () => {
             ref={fileInputRef}
             onChange={(e) => {
               formik.setFieldValue("audioFile", e.target.files[0]);
-              //setData(URL.createObjectURL(e.target.files[0]));
             }}
           />
         </div>
@@ -111,9 +100,6 @@ const AudioInput = () => {
             {formik.touched.audioFile && formik.errors.audioFile}
           </small>
         </div>
-        {/* {isAudioUploaded && <div className="d-flex justify-content-center mt-1">
-              <h6>Audio uploaded</h6>
-            </div>} */}
         <Progress percentage={uploadPercentange} />
         {loading ? (
           <>
@@ -127,15 +113,7 @@ const AudioInput = () => {
               </h6>
             </div>
             <div className="d-flex justify-content-center mt-2">
-              <div
-                class="spinner-border d-flex justify-content-center"
-                style={{ color: COLORS.SECONDARY }}
-                role="status"
-              >
-                {/* <span class="sr-only text-center">
-                  Transcript generating...
-                </span> */}
-              </div>
+              <Spinner size="lg" />
             </div>
           </>
         ) : (

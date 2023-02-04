@@ -1,15 +1,12 @@
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
-import ReactAudioPlayer from "react-audio-player";
 import { useLocation, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-import ReactPlayer from "react-player";
+import Spinner from "../components/Spinner";
 import { COLORS } from "../constant";
-import Recorder from "../utils/Recorder";
 
 const KeywordPage = () => {
   const { state } = useLocation();
-  const navigate = useNavigate();
 
   const [audio, setAudio] = useState(null);
   const [recording, setRecording] = useState(false);
@@ -19,6 +16,7 @@ const KeywordPage = () => {
   const [error, setError] = useState(false);
   const [timestamps, setTimestamps] = useState([]);
   const [recordedAudio, setRecordedAudio] = useState(null);
+  const [recorderLoading, setRecorderLoading] = useState(false);
 
   // References
   const keyInputRef = useRef();
@@ -49,7 +47,7 @@ const KeywordPage = () => {
   const onSumbitKeyword = async () => {
     if (keyword.length == 0) return setError(true);
     setLoading(true);
-    const res = await axios
+    await axios
       .post("http://127.0.0.1:5000/timestamps", {
         transcript_data: state?.data,
         search_word: keyword,
@@ -59,14 +57,26 @@ const KeywordPage = () => {
         setLoading(false);
         setTimestamps(res.data);
         if (res.data.length === 0) {
-          Swal.fire(
-            "Empty !!",
-            "There is no such keyword in the audio file",
-            "info"
-          );
+          Swal.fire({
+            title: "Empty !!",
+            text: "There is no such keyword in the audio file",
+            icon: "error",
+            showCloseButton: false,
+            confirmButtonColor: COLORS.SECONDARY,
+          });
           keyInputRef.current.value = "";
         }
         // keyInputRef.current.value = "";
+      })
+      .catch((err) => {
+        setLoading(false);
+        Swal.fire({
+          title: "Error",
+          text: err.message,
+          icon: "error",
+          showCloseButton: false,
+          confirmButtonColor: COLORS.SECONDARY,
+        });
       });
   };
 
@@ -100,9 +110,13 @@ const KeywordPage = () => {
             await axios
               .post("http://127.0.0.1:5000/upload", formData)
               .then((res) => {
+                setRecorderLoading(false);
                 setKeyword(res.data.text);
               })
-              .catch((err) => console.log(err));
+              .catch((err) => {
+                console.log(err);
+                setRecorderLoading(false);
+              });
           };
           recorderObj.start();
           setRecorder(recorderObj);
@@ -110,9 +124,17 @@ const KeywordPage = () => {
         .catch((err) => {
           console.log(err);
           setRecording(false);
+          Swal.fire({
+            title: "Error",
+            text: "Please allow microphone access to record audio",
+            icon: "error",
+            showCloseButton: false,
+            confirmButtonColor: COLORS.SECONDARY,
+          });
         });
     } else {
       setRecording(false);
+      setRecorderLoading(true);
       recorder.stop();
     }
   };
@@ -142,7 +164,6 @@ const KeywordPage = () => {
                 <i className="fas fa-magnifying-glass" />
                 &nbsp; Search keyword
               </h4>
-              {/* <form className="needs-validation"> */}
               <div class="form-group my-4" style={{ position: "relative" }}>
                 <div className="input-group">
                   <input
@@ -178,35 +199,44 @@ const KeywordPage = () => {
                   OR
                 </div>
                 <div className="d-flex justify-content-center">
-                  <button
-                    className={`record-block ${recording ? "recording" : ""}`}
-                    onClick={handleRecordClick}
-                    ref={recordButtonRef}
-                    disabled={loading}
-                  >
-                    {recording ? (
-                      <i className="fas fa-stop" />
-                    ) : (
-                      <i className="fas fa-microphone" />
-                    )}
-                  </button>
+                  {!recorderLoading ? (
+                    <button
+                      className={`record-block ${recording ? "recording" : ""}`}
+                      onClick={handleRecordClick}
+                      ref={recordButtonRef}
+                      disabled={loading}
+                    >
+                      {recording ? (
+                        <i className="fas fa-stop" />
+                      ) : (
+                        <i className="fas fa-microphone" />
+                      )}
+                    </button>
+                  ) : (
+                    <Spinner type="grow" size="lg" color={COLORS.SECONDARY} />
+                  )}
                 </div>
                 {recordedAudio && <audio src={recordedAudio} controls />}
-                <button
-                  onClick={onSumbitKeyword}
-                  type="submit"
-                  disabled={recording || loading}
-                  style={{
-                    backgroundColor: COLORS.SECONDARY,
-                    color: "#FFF",
-                    border: "none",
-                  }}
-                  className="btn submit-btn mt-4 p-2"
-                >
-                  Search
-                </button>
+                {loading ? (
+                  <div className="d-flex justify-content-center mt-4">
+                    <Spinner color={COLORS.SECONDARY} size="lg" type="border" />{" "}
+                  </div>
+                ) : (
+                  <button
+                    onClick={onSumbitKeyword}
+                    type="submit"
+                    disabled={recording}
+                    style={{
+                      backgroundColor: COLORS.SECONDARY,
+                      color: "#FFF",
+                      border: "none",
+                    }}
+                    className="btn submit-btn mt-4 p-2"
+                  >
+                    Search
+                  </button>
+                )}
               </div>
-              {/* </form> */}
             </div>
           </div>
         </div>
@@ -253,51 +283,6 @@ const KeywordPage = () => {
             </div>
           </div>
         </div>
-      </div>
-      <div style={{ flexDirection: "column" }}>
-        {/* <div class="form-group">
-          <label for="exampleInputEmail1">Enter Keyword </label>
-          <input
-            ref={keyInputRef}
-            type="text"
-            class="form-control"
-            placeholder="Enter keyword"
-            onChange={(e) => setKeyword(e.target.value)}
-          />
-          <small id="emailHelp" class="form-text text-muted">
-            We'll never share your email with anyone else.
-          </small>
-          <button
-            onClick={(e) => {
-              onSumbitKeyword(keyword);
-              console.log("Pressing");
-            }}
-            type="submit"
-            className="btn btn-primary mt-4 w-100 p-2"
-          >
-            Search
-          </button>
-        </div> */}
-        {/* <div style={{ margin: "2rem" }}>
-          <ReactAudioPlayer style={{ width: "100%" }} autoPlay controls />
-        </div> */}
-        {/* <ReactPlayer
-          url={audio}
-          controls={true}
-          width="50%"
-          volume={0.5}
-          playsinline
-          config={{
-            file: {
-              attributes: { borderRadius: 10 },
-              forceAudio: true,
-              forceVideo: false,
-            },
-          }}
-        /> */}
-        {/* <audio src={audio} controls style={{ width: "100%" }} /> */}
-
-        {/* Generating Timestamps */}
       </div>
     </div>
   );
