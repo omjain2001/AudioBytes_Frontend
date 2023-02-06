@@ -15,12 +15,12 @@ const KeywordPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [timestamps, setTimestamps] = useState([]);
-  const [recordedAudio, setRecordedAudio] = useState(null);
   const [recorderLoading, setRecorderLoading] = useState(false);
 
   // References
   const keyInputRef = useRef();
   const recordButtonRef = useRef();
+  const audioRef = useRef();
 
   useEffect(() => {
     // console.log("Entered1 in useEffect");
@@ -81,22 +81,18 @@ const KeywordPage = () => {
   };
 
   const handleAudio = (start, end) => {
-    const audio1 = new Audio(audio);
-    audio1.autoplay = false;
-    audio1.currentTime = start;
-    audio1.play();
-    setInterval(function () {
-      if (audio1.currentTime > end) {
-        audio1.pause();
-      }
-    }, 100);
+    const delayMills = (end - start) * 1000;
+    audioRef.current.currentTime = start;
+    audioRef.current.play();
+    setTimeout(() => {
+      audioRef.current.pause();
+    }, delayMills);
   };
 
   let chunks = [];
   const handleRecordClick = () => {
     if (!recording) {
       setRecording(true);
-      setRecordedAudio(null);
       chunks = [];
 
       navigator.mediaDevices
@@ -216,7 +212,6 @@ const KeywordPage = () => {
                     <Spinner type="grow" size="lg" color={COLORS.SECONDARY} />
                   )}
                 </div>
-                {recordedAudio && <audio src={recordedAudio} controls />}
                 {loading ? (
                   <div className="d-flex justify-content-center mt-4">
                     <Spinner color={COLORS.SECONDARY} size="lg" type="border" />{" "}
@@ -225,7 +220,7 @@ const KeywordPage = () => {
                   <button
                     onClick={onSumbitKeyword}
                     type="submit"
-                    disabled={recording}
+                    disabled={recording || recorderLoading}
                     style={{
                       backgroundColor: COLORS.SECONDARY,
                       color: "#FFF",
@@ -249,7 +244,12 @@ const KeywordPage = () => {
         <div className="col-md-7">
           <div className="row">
             <div className="col-12 p-0 my-4">
-              <audio src={audio} controls style={{ width: "100%" }} />
+              <audio
+                src={audio}
+                controls
+                style={{ width: "100%" }}
+                ref={audioRef}
+              />
             </div>
             <div className="col-12">
               {timestamps.length > 0 && (
