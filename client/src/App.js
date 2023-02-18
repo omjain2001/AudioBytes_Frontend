@@ -4,6 +4,8 @@ import { useEffect } from "react";
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 import Home from "./pages/Home";
 import KeywordPage from "./pages/KeywordPage";
+import AudioInAudio from "./pages/AudioInAudio";
+import Welcome from "./pages/Welcome";
 
 function App() {
   useEffect(() => {
@@ -23,8 +25,10 @@ function App() {
     //   </Routes>
     // </BrowserRouter>
     <Routes>
-      <Route path="/" element={<Home />} />
+      <Route path="/" element={<Welcome />} />
+      <Route path="/uploadAudio" element={<Home />} />
       <Route path="/searchKeyword" element={<KeywordPage />} />
+      <Route path="/searchAudio" element={<AudioInAudio />} />
     </Routes>
   );
 }

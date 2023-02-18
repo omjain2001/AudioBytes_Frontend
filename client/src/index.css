@@ -79,6 +79,41 @@ body {
   color: #fff !important;
 }
 
+.welcomeBtn {
+  border: 1px solid #e2e8f0;
+  transition: all ease-in-out 0.3s !important;
+  color: #e2e8f0;
+}
+
+.welcomeBtn:hover {
+  background-color: #0c4a6e !important;
+  transition: all ease-in-out 0.3s !important;
+  color: #fff !important;
+  border-color: #0c4a6e;
+}
+
+/* .custom-welcome-blur-card {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 30px;
+  margin: 0 auto;
+  background-position: center -100px;
+  -webkit-filter: blur(7px);
+  z-index: -1;
+} */
+
+.custom-welcome-card {
+  background: rgb(12, 74, 110);
+  background: linear-gradient(
+    135deg,
+    rgba(12, 74, 110, 1) 7%,
+    rgba(2, 132, 199, 1) 76%
+  );
+}
+
 @media only screen and (max-width: 768px) {
   .home {
     width: 80%;
