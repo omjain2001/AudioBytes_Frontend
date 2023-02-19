@@ -47,37 +47,71 @@ const KeywordPage = () => {
   const onSumbitKeyword = async () => {
     if (keyword.length == 0) return setError(true);
     setLoading(true);
-    await axios
-      .post("http://127.0.0.1:5000/timestamps", {
-        transcript_data: state?.data,
-        search_word: keyword,
-      })
-      .then((res) => {
-        // console.log(res.data);
-        setLoading(false);
-        setTimestamps(res.data);
-        if (res.data.length === 0) {
+
+    if (keyword.split(" ").length > 1) {
+      await axios
+        .post("http://127.0.0.1:5000/getContextForSentence", {
+          text_array: state?.data?.segments,
+          input_sentence: keyword,
+        })
+        .then((res) => {
+          // console.log(res.data);
+          setLoading(false);
+          setTimestamps(res.data);
+          if (res.data.length === 0) {
+            Swal.fire({
+              title: "Empty !!",
+              text: "There is no such sentence in the audio file",
+              icon: "error",
+              showCloseButton: false,
+              confirmButtonColor: COLORS.SECONDARY,
+            });
+            keyInputRef.current.value = "";
+          }
+        })
+        .catch((err) => {
+          setLoading(false);
           Swal.fire({
-            title: "Empty !!",
-            text: "There is no such keyword in the audio file",
+            title: "Error",
+            text: err.message,
             icon: "error",
             showCloseButton: false,
             confirmButtonColor: COLORS.SECONDARY,
           });
-          keyInputRef.current.value = "";
-        }
-        // keyInputRef.current.value = "";
-      })
-      .catch((err) => {
-        setLoading(false);
-        Swal.fire({
-          title: "Error",
-          text: err.message,
-          icon: "error",
-          showCloseButton: false,
-          confirmButtonColor: COLORS.SECONDARY,
         });
-      });
+    } else {
+      await axios
+        .post("http://127.0.0.1:5000/timestamps", {
+          transcript_data: state?.data,
+          search_word: keyword,
+        })
+        .then((res) => {
+          // console.log(res.data);
+          setLoading(false);
+          setTimestamps(res.data);
+          if (res.data.length === 0) {
+            Swal.fire({
+              title: "Empty !!",
+              text: "There is no such keyword in the audio file",
+              icon: "error",
+              showCloseButton: false,
+              confirmButtonColor: COLORS.SECONDARY,
+            });
+            keyInputRef.current.value = "";
+          }
+          // keyInputRef.current.value = "";
+        })
+        .catch((err) => {
+          setLoading(false);
+          Swal.fire({
+            title: "Error",
+            text: err.message,
+            icon: "error",
+            showCloseButton: false,
+            confirmButtonColor: COLORS.SECONDARY,
+          });
+        });
+    }
   };
 
   const handleAudio = (start, end) => {
@@ -144,7 +178,7 @@ const KeywordPage = () => {
         AUDIOBYTES
       </h1>
       <div className="row mt-5 py-3">
-        <div className="col-md-4 h-100">
+        <div className="col-md-5 h-100">
           <div
             className="card p-4"
             style={{ boxShadow: "rgba(17, 12, 46, 0.15) 0px 48px 100px 0px" }}
@@ -158,15 +192,15 @@ const KeywordPage = () => {
                 }}
               >
                 <i className="fas fa-magnifying-glass" />
-                &nbsp; Search keyword
+                &nbsp; Search keyword or context
               </h4>
               <div className="form-group my-4" style={{ position: "relative" }}>
                 <div className="input-group">
                   <input
                     ref={keyInputRef}
                     type="text"
-                    className="form-control shadow-none"
-                    placeholder="Enter keyword"
+                    class="form-control shadow-none"
+                    placeholder="Enter keyword or sentence"
                     value={keyword}
                     disabled={recording || loading}
                     onChange={(e) => {
@@ -183,6 +217,16 @@ const KeywordPage = () => {
                     <i class="fas fa-xmark"></i>
                   </button>
                 </div>
+                <h6
+                  className="mt-1"
+                  style={{
+                    fontSize: 12,
+                    color: COLORS.TERTIARY,
+                    textAlign: "left",
+                  }}
+                >
+                  Enter keyword for its occurences and sentence for context
+                </h6>
                 {error && (
                   <div className="mt-1" style={{ textAlign: "left" }}>
                     <small className="text-danger">Keyword is required</small>
@@ -241,7 +285,7 @@ const KeywordPage = () => {
             style={{ width: "1.5px", backgroundColor: COLORS.SECONDARY }}
           />
         </div>
-        <div className="col-md-7">
+        <div className="col-md-6">
           <div className="row">
             <div className="col-12 p-0 my-4">
               <audio
@@ -258,27 +302,29 @@ const KeywordPage = () => {
                 </div>
               )}
               <div className="d-flex flex-wrap justify-content-space-evenly">
-                {timestamps.length === 0
-                  ? "Search for a keyword to fetch the timestamps !!"
-                  : timestamps.map((timestamp, index) => {
-                      return (
-                        <button
-                          key={index}
-                          type="button"
-                          className="btn submit-btn my-2"
-                          style={{
-                            marginRight: 10,
-                            color: COLORS.PRIMARY,
-                            border: `1px solid ${COLORS.SECONDARY}`,
-                          }}
-                          onClick={(e) =>
-                            handleAudio(timestamp[0], timestamp[1])
-                          }
-                        >
-                          {timestamp[0]} sec - {timestamp[1]} sec
-                        </button>
-                      );
-                    })}
+                {timestamps.length === 0 ? (
+                  <span color={{ color: COLORS.PRIMARY }}>
+                    Search for a keyword to fetch the timestamps !!
+                  </span>
+                ) : (
+                  timestamps.map((timestamp, index) => {
+                    return (
+                      <button
+                        key={index}
+                        type="button"
+                        className="btn submit-btn my-2"
+                        style={{
+                          marginRight: 10,
+                          color: COLORS.PRIMARY,
+                          border: `1px solid ${COLORS.SECONDARY}`,
+                        }}
+                        onClick={(e) => handleAudio(timestamp[0], timestamp[1])}
+                      >
+                        {timestamp[0]} sec - {timestamp[1]} sec
+                      </button>
+                    );
+                  })
+                )}
               </div>
             </div>
           </div>
