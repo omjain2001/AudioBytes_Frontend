@@ -160,12 +160,12 @@ const KeywordPage = () => {
                 <i className="fas fa-magnifying-glass" />
                 &nbsp; Search keyword
               </h4>
-              <div class="form-group my-4" style={{ position: "relative" }}>
+              <div className="form-group my-4" style={{ position: "relative" }}>
                 <div className="input-group">
                   <input
                     ref={keyInputRef}
                     type="text"
-                    class="form-control shadow-none"
+                    className="form-control shadow-none"
                     placeholder="Enter keyword"
                     value={keyword}
                     disabled={recording || loading}

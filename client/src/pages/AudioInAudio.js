@@ -1,6 +1,5 @@
 import { useFormik } from "formik";
 import React, { useEffect, useRef, useState } from "react";
-import { useLocation } from "react-router-dom";
 import * as Yup from "yup";
 import API from "../API";
 import Spinner from "../components/Spinner";
@@ -32,7 +31,8 @@ const AudioInAudio = () => {
       setLoading(true);
       await API.getTimestampsFromAudio(formData)
         .then((res) => {
-          setTimestamps([res.data.timestamps[0]]);
+          console.log(res.data);
+          setTimestamps(res.data.timestamps);
           setLoading(false);
         })
         .catch((err) => {
@@ -43,7 +43,6 @@ const AudioInAudio = () => {
   });
 
   useEffect(() => {
-    console.log("Useeffect running");
     if (formik.values.inputAudioFile) {
       const file = new FileReader();
       file.readAsDataURL(formik.values.inputAudioFile);
@@ -64,15 +63,13 @@ const AudioInAudio = () => {
     }
   }, [formik.values]);
 
-  const handleAudio = (timestamp) => {
-    // const delayMills = (end - start) * 1000;
-    inputAudioRef.current.currentTime = parseFloat(
-      Number(timestamp).toFixed(2)
-    );
+  const handleAudio = (start, end) => {
+    const delayMills = (end - start) * 1000;
+    inputAudioRef.current.currentTime = parseFloat(Number(start).toFixed(2));
     inputAudioRef.current.play();
-    // setTimeout(() => {
-    //   inputAudioRef.current.pause();
-    // }, delayMills);
+    setTimeout(() => {
+      inputAudioRef.current.pause();
+    }, delayMills);
   };
 
   return (
@@ -103,7 +100,7 @@ const AudioInAudio = () => {
               <form onSubmit={formik.handleSubmit}>
                 <div class="form-group">
                   <label htmlFor="inputAudio" className="form-label">
-                    Upload sample audio
+                    Upload Sample Audio
                   </label>
                   <input
                     disabled={loading}
@@ -127,7 +124,7 @@ const AudioInAudio = () => {
                 </div>
                 <div class="form-group">
                   <label htmlFor="searchAudio" className="form-label">
-                    Upload test audio
+                    Upload Test Audio
                   </label>
                   <input
                     disabled={loading}
@@ -194,7 +191,7 @@ const AudioInAudio = () => {
                   className="text-center mb-3"
                   style={{ color: COLORS.PRIMARY }}
                 >
-                  Input
+                  Sample Audio
                 </h5>
                 <audio src={inputAudio} controls ref={inputAudioRef} />
               </div>
@@ -205,7 +202,7 @@ const AudioInAudio = () => {
                   className="text-center mb-3"
                   style={{ color: COLORS.PRIMARY }}
                 >
-                  Sample
+                  Test Audio
                 </h5>
                 <audio src={searchAudio} controls />
               </div>
@@ -230,9 +227,9 @@ const AudioInAudio = () => {
                           color: COLORS.PRIMARY,
                           border: `1px solid ${COLORS.SECONDARY}`,
                         }}
-                        onClick={(e) => handleAudio(timestamp)}
+                        onClick={(e) => handleAudio(timestamp[0], timestamp[1])}
                       >
-                        {Number(timestamp).toPrecision(3)} sec
+                        {timestamp[0]} sec - {timestamp[1]} sec
                       </button>
                     );
                   })
