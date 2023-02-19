@@ -47,7 +47,39 @@ const KeywordPage = () => {
   const onSumbitKeyword = async () => {
     if (keyword.length == 0) return setError(true);
     setLoading(true);
-    await axios
+
+    if(keyword.split(" ").length > 1){
+      await axios
+      .post("http://127.0.0.1:5000/getContextForSentence", {
+        text_array: state?.data?.segments,
+        input_sentence: keyword,
+      })
+      .then((res) => {
+        // console.log(res.data);
+        setLoading(false);
+        setTimestamps(res.data);
+        if (res.data.length === 0) {
+          Swal.fire({
+            title: "Empty !!",
+            text: "There is no such sentence in the audio file",
+            icon: "error",
+            showCloseButton: false,
+            confirmButtonColor: COLORS.SECONDARY,
+          });
+          keyInputRef.current.value = "";
+        }}).catch((err) => {
+          setLoading(false);
+          Swal.fire({
+            title: "Error",
+            text: err.message,
+            icon: "error",
+            showCloseButton: false,
+            confirmButtonColor: COLORS.SECONDARY,
+          });
+        });
+
+    }else{
+      await axios
       .post("http://127.0.0.1:5000/timestamps", {
         transcript_data: state?.data,
         search_word: keyword,
@@ -78,6 +110,8 @@ const KeywordPage = () => {
           confirmButtonColor: COLORS.SECONDARY,
         });
       });
+    }
+    
   };
 
   const handleAudio = (start, end) => {
@@ -144,7 +178,7 @@ const KeywordPage = () => {
         AUDIOBYTES
       </h1>
       <div className="row mt-5 py-3">
-        <div className="col-md-4 h-100">
+        <div className="col-md-5 h-100">
           <div
             className="card p-4"
             style={{ boxShadow: "rgba(17, 12, 46, 0.15) 0px 48px 100px 0px" }}
@@ -158,7 +192,7 @@ const KeywordPage = () => {
                 }}
               >
                 <i className="fas fa-magnifying-glass" />
-                &nbsp; Search keyword
+                &nbsp; Search keyword OR Context of sentence
               </h4>
               <div class="form-group my-4" style={{ position: "relative" }}>
                 <div className="input-group">
@@ -166,7 +200,7 @@ const KeywordPage = () => {
                     ref={keyInputRef}
                     type="text"
                     class="form-control shadow-none"
-                    placeholder="Enter keyword"
+                    placeholder="Enter keyword or sentence"
                     value={keyword}
                     disabled={recording || loading}
                     onChange={(e) => {
@@ -241,7 +275,7 @@ const KeywordPage = () => {
             style={{ width: "1.5px", backgroundColor: COLORS.SECONDARY }}
           />
         </div>
-        <div className="col-md-7">
+        <div className="col-md-6">
           <div className="row">
             <div className="col-12 p-0 my-4">
               <audio
