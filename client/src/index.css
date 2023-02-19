@@ -1,13 +1,121 @@
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  font-family: "Poppins";
+  position: relative;
+  background-color: #e2e8f0;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+.home {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.submit-btn:hover {
+  background-color: #0c4a6e !important;
+  transition: all ease-in-out 0.3s !important;
+  color: #fff !important;
+}
+
+.cross-btn {
+  border-color: #ced4da !important;
+  transition: all ease-in-out 0.2s !important;
+}
+
+.cross-btn:focus {
+  border-color: #ced4da !important;
+}
+
+.cross-btn:hover {
+  /* background-color: #9da2a6; */
+  background-color: #0284c7;
+  transition: all ease-in-out 0.2s !important;
+}
+
+.cross-btn:hover i {
+  color: #fff;
+}
+
+.record-block {
+  position: relative;
+  height: 3rem;
+  width: 3rem;
+  border-radius: 50%;
+  border: 1px solid #0c4a6e;
+  background-color: #fff;
+}
+
+.record-block i {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #0c4a6e;
+}
+
+.record-block:hover {
+  background-color: #0c4a6e;
+  transition: all ease-in-out 0.3s;
+  cursor: pointer;
+}
+
+.record-block:hover i {
+  color: #fff;
+  transition: all ease-in-out 0.3s;
+}
+
+.recording {
+  background-color: #cd0000 !important;
+  border-color: #cd0000;
+}
+
+.recording:hover {
+  background-color: #a20000 !important;
+  border-color: #a20000;
+}
+
+.recording i {
+  color: #fff !important;
+}
+
+.welcomeBtn {
+  border: 1px solid #e2e8f0;
+  transition: all ease-in-out 0.3s !important;
+  color: #e2e8f0;
+}
+
+.welcomeBtn:hover {
+  background-color: #0c4a6e !important;
+  transition: all ease-in-out 0.3s !important;
+  color: #fff !important;
+  border-color: #0c4a6e;
+}
+
+/* .custom-welcome-blur-card {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 30px;
+  margin: 0 auto;
+  background-position: center -100px;
+  -webkit-filter: blur(7px);
+  z-index: -1;
+} */
+
+.custom-welcome-card {
+  background: rgb(12, 74, 110);
+  background: linear-gradient(
+    135deg,
+    rgba(12, 74, 110, 1) 7%,
+    rgba(2, 132, 199, 1) 76%
+  );
+}
+
+@media only screen and (max-width: 768px) {
+  .home {
+    width: 80%;
+  }
 }
