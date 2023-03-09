@@ -2,7 +2,8 @@ import React from "react";
 import AudioInput from "../components/AudioInput";
 import { COLORS } from "../constant";
 
-const Home = () => {
+const Home = (props) => {
+  const { mode } = props;
   return (
     <div className="container vh-100 py-5">
       <h1
@@ -33,7 +34,7 @@ const Home = () => {
             Upload only .mp3 and .wav files
           </h6>
           <div className="card-text">
-            <AudioInput />
+            <AudioInput mode={mode} />
           </div>
         </div>
       </div>

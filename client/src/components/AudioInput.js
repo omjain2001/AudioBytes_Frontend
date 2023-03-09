@@ -6,10 +6,11 @@ import Progress from "./Progress";
 
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-import { COLORS } from "../constant";
+import { COLORS, MODE } from "../constant";
 import Spinner from "./Spinner";
 
-const AudioInput = () => {
+const AudioInput = (props) => {
+  const { mode } = props;
   const navigate = useNavigate();
   const fileInputRef = useRef();
   const [uploadPercentange, setUploadPercentange] = useState(0);
@@ -57,12 +58,17 @@ const AudioInput = () => {
               showCloseButton: false,
               confirmButtonColor: COLORS.SECONDARY,
             });
-            navigate("/searchKeyword", {
-              state: {
-                data: res.data,
-                audio: values.audioFile,
-              },
-            });
+            navigate(
+              mode === MODE.SEARCH_KEYWORD
+                ? "/searchKeyword"
+                : "/searchContext",
+              {
+                state: {
+                  data: res.data,
+                  audio: values.audioFile,
+                },
+              }
+            );
           });
 
         fileInputRef.current.value = "";

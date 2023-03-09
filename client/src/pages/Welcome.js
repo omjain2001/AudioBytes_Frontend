@@ -1,6 +1,6 @@
 import Lottie from "lottie-react";
 import React from "react";
-import { COLORS } from "../constant";
+import { COLORS, MODE } from "../constant";
 import welcomeAnimation from "../assets/musicScan.json";
 import welcomeAnimation2 from "../assets/musicScan2.json";
 import { Link, useNavigate } from "react-router-dom";
@@ -41,14 +41,15 @@ const Welcome = () => {
                 Search audio
               </h4>
               <div className="d-flex flex-column">
-                <Link to="/uploadAudio">
-                  <button className="btn welcomeBtn my-2 w-100">
-                    Using keyword or recording
-                  </button>
+                <Link to="/uploadAudio" state={{ mode: MODE.SEARCH_KEYWORD }}>
+                  <button className="btn welcomeBtn my-2 w-100">Keyword</button>
+                </Link>
+                <Link to="/uploadAudio" state={{ mode: MODE.SEARCH_CONTEXT }}>
+                  <button className="btn welcomeBtn my-2 w-100">Context</button>
                 </Link>
                 <Link to="searchAudio">
                   <button className="btn welcomeBtn my-2 w-100">
-                    Using audio clip
+                    Audio Clip
                   </button>
                 </Link>
                 <div className="d-flex justify-content-center mt-1">

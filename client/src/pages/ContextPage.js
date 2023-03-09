@@ -5,9 +5,8 @@ import Swal from "sweetalert2";
 import Spinner from "../components/Spinner";
 import { COLORS } from "../constant";
 
-const KeywordPage = () => {
+const ContextPage = () => {
   const { state } = useLocation();
-
   const [audio, setAudio] = useState(null);
   const [recording, setRecording] = useState(false);
   const [recorder, setRecorder] = useState(null);
@@ -23,14 +22,6 @@ const KeywordPage = () => {
   const audioRef = useRef();
 
   useEffect(() => {
-    // console.log("Entered1 in useEffect");
-    if (state?.data == null || state?.data === undefined) {
-      // console.log("Entered in useEffect");
-      // navigate("/");
-    }
-  }, []);
-
-  useEffect(() => {
     if (state?.audio !== null && state?.audio !== undefined) {
       const file = new FileReader();
       file.readAsDataURL(state.audio);
@@ -42,76 +33,39 @@ const KeywordPage = () => {
     }
   }, [state?.audio]);
 
-  // const { data=null } = state;
-
   const onSumbitKeyword = async () => {
     if (keyword.length == 0) return setError(true);
     setLoading(true);
 
-    if (keyword.split(" ").length > 1) {
-      await axios
-        .post("http://127.0.0.1:5000/getContextForSentence", {
-          text_array: state?.data?.segments,
-          input_sentence: keyword,
-        })
-        .then((res) => {
-          // console.log(res.data);
-          setLoading(false);
-          setTimestamps(res.data);
-          if (res.data.length === 0) {
-            Swal.fire({
-              title: "Empty !!",
-              text: "There is no such sentence in the audio file",
-              icon: "error",
-              showCloseButton: false,
-              confirmButtonColor: COLORS.SECONDARY,
-            });
-            keyInputRef.current.value = "";
-          }
-        })
-        .catch((err) => {
-          setLoading(false);
+    await axios
+      .post("http://127.0.0.1:5000/getContextForSentence", {
+        text_array: state?.data?.segments,
+        input_sentence: keyword,
+      })
+      .then((res) => {
+        setLoading(false);
+        setTimestamps(res.data);
+        if (res.data.length === 0) {
           Swal.fire({
-            title: "Error",
-            text: err.message,
+            title: "Empty !!",
+            text: "There is no related context in the audio file",
             icon: "error",
             showCloseButton: false,
             confirmButtonColor: COLORS.SECONDARY,
           });
+          keyInputRef.current.value = "";
+        }
+      })
+      .catch((err) => {
+        setLoading(false);
+        Swal.fire({
+          title: "Error",
+          text: err.message,
+          icon: "error",
+          showCloseButton: false,
+          confirmButtonColor: COLORS.SECONDARY,
         });
-    } else {
-      await axios
-        .post("http://127.0.0.1:5000/timestamps", {
-          transcript_data: state?.data,
-          search_word: keyword,
-        })
-        .then((res) => {
-          // console.log(res.data);
-          setLoading(false);
-          setTimestamps(res.data);
-          if (res.data.length === 0) {
-            Swal.fire({
-              title: "Empty !!",
-              text: "There is no such keyword in the audio file",
-              icon: "error",
-              showCloseButton: false,
-              confirmButtonColor: COLORS.SECONDARY,
-            });
-            keyInputRef.current.value = "";
-          }
-          // keyInputRef.current.value = "";
-        })
-        .catch((err) => {
-          setLoading(false);
-          Swal.fire({
-            title: "Error",
-            text: err.message,
-            icon: "error",
-            showCloseButton: false,
-            confirmButtonColor: COLORS.SECONDARY,
-          });
-        });
-    }
+      });
   };
 
   const handleAudio = (start, end) => {
@@ -200,7 +154,7 @@ const KeywordPage = () => {
                     ref={keyInputRef}
                     type="text"
                     class="form-control shadow-none"
-                    placeholder="Enter keyword or sentence"
+                    placeholder="Type a sentence"
                     value={keyword}
                     disabled={recording || loading}
                     onChange={(e) => {
@@ -304,7 +258,7 @@ const KeywordPage = () => {
               <div className="d-flex flex-wrap justify-content-space-evenly">
                 {timestamps.length === 0 ? (
                   <span color={{ color: COLORS.PRIMARY }}>
-                    Search for a keyword to fetch the timestamps !!
+                    Search a sentence and get timestamps of its context
                   </span>
                 ) : (
                   timestamps.map((timestamp, index) => {
@@ -334,4 +288,4 @@ const KeywordPage = () => {
   );
 };
 
-export default KeywordPage;
+export default ContextPage;

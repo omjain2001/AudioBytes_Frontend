@@ -5,3 +5,8 @@ export const COLORS = {
   INPUT_BORDER: "#ced4da",
   RECORDING: "#cd0000",
 };
+
+export const MODE = {
+  SEARCH_CONTEXT: "SEARCH_CONTEXT",
+  SEARCH_KEYWORD: "SEARCH_KEYWORD",
+};

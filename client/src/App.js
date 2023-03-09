@@ -6,6 +6,7 @@ import Home from "./pages/Home";
 import KeywordPage from "./pages/KeywordPage";
 import AudioInAudio from "./pages/AudioInAudio";
 import Welcome from "./pages/Welcome";
+import ContextPage from "./pages/ContextPage";
 
 function App() {
   useEffect(() => {
@@ -28,6 +29,7 @@ function App() {
       <Route path="/" element={<Welcome />} />
       <Route path="/uploadAudio" element={<Home />} />
       <Route path="/searchKeyword" element={<KeywordPage />} />
+      <Route path="/searchContext" element={<ContextPage />} />
       <Route path="/searchAudio" element={<AudioInAudio />} />
     </Routes>
   );
