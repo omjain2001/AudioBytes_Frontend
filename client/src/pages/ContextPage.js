@@ -146,7 +146,7 @@ const ContextPage = () => {
                 }}
               >
                 <i className="fas fa-magnifying-glass" />
-                &nbsp; Search keyword or context
+                &nbsp; Search context
               </h4>
               <div className="form-group my-4" style={{ position: "relative" }}>
                 <div className="input-group">
