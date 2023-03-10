@@ -4,13 +4,13 @@ import React, { useRef, useState } from "react";
 import * as Yup from "yup";
 import Progress from "./Progress";
 
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { COLORS, MODE } from "../constant";
 import Spinner from "./Spinner";
 
 const AudioInput = (props) => {
-  const { mode } = props;
+  const { mode } = useLocation().state;
   const navigate = useNavigate();
   const fileInputRef = useRef();
   const [uploadPercentange, setUploadPercentange] = useState(0);

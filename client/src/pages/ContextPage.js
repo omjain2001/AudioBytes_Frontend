@@ -34,13 +34,14 @@ const ContextPage = () => {
   }, [state?.audio]);
 
   const onSumbitKeyword = async () => {
-    if (keyword.length == 0) return setError(true);
+    if (keyword.length === 0) return setError(true);
     setLoading(true);
-
+    console.log(state?.data?.segments);
+    console.log(keyword);
     await axios
       .post("http://127.0.0.1:5000/getContextForSentence", {
-        text_array: state?.data?.segments,
-        input_sentence: keyword,
+        transcripts: state?.data?.segments,
+        sentence: keyword,
       })
       .then((res) => {
         setLoading(false);

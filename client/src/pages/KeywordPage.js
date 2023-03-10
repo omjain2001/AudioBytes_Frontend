@@ -5,8 +5,9 @@ import Swal from "sweetalert2";
 import Spinner from "../components/Spinner";
 import { COLORS } from "../constant";
 
-const KeywordPage = () => {
+const KeywordPage = (props) => {
   const { state } = useLocation();
+  console.log(props.state);
 
   const [audio, setAudio] = useState(null);
   const [recording, setRecording] = useState(false);
@@ -23,14 +24,6 @@ const KeywordPage = () => {
   const audioRef = useRef();
 
   useEffect(() => {
-    // console.log("Entered1 in useEffect");
-    if (state?.data == null || state?.data === undefined) {
-      // console.log("Entered in useEffect");
-      // navigate("/");
-    }
-  }, []);
-
-  useEffect(() => {
     if (state?.audio !== null && state?.audio !== undefined) {
       const file = new FileReader();
       file.readAsDataURL(state.audio);
@@ -42,10 +35,8 @@ const KeywordPage = () => {
     }
   }, [state?.audio]);
 
-  // const { data=null } = state;
-
   const onSumbitKeyword = async () => {
-    if (keyword.length == 0) return setError(true);
+    if (keyword.length === 0) return setError(true);
     setLoading(true);
 
     if (keyword.split(" ").length > 1) {

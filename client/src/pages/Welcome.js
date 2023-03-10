@@ -41,10 +41,20 @@ const Welcome = () => {
                 Search audio
               </h4>
               <div className="d-flex flex-column">
-                <Link to="/uploadAudio" state={{ mode: MODE.SEARCH_KEYWORD }}>
+                <Link
+                  to={{
+                    pathname: "/uploadAudio",
+                  }}
+                  state={{ mode: MODE.SEARCH_KEYWORD }}
+                >
                   <button className="btn welcomeBtn my-2 w-100">Keyword</button>
                 </Link>
-                <Link to="/uploadAudio" state={{ mode: MODE.SEARCH_CONTEXT }}>
+                <Link
+                  to={{
+                    pathname: "/uploadAudio",
+                  }}
+                  state={{ mode: MODE.SEARCH_CONTEXT }}
+                >
                   <button className="btn welcomeBtn my-2 w-100">Context</button>
                 </Link>
                 <Link to="searchAudio">
